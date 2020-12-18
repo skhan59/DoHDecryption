@@ -1,0 +1,73 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2577
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\froman\fcharset0 Times-Roman;\f1\fnil\fcharset0 HelveticaNeue;}
+{\colortbl;\red255\green255\blue255;\red18\green0\blue233;}
+{\*\expandedcolortbl;;\csgenericrgb\c7059\c0\c91373;}
+\margl1440\margr1440\vieww12540\viewh14860\viewkind1\viewscale130
+\deftab720
+\pard\pardeftab720\ri0\partightenfactor0
+
+\f0\fs24 \cf0 Prompt: Can the DNS name be recovered even though the request the encrypted?\
+\pard\pardeftab720\ri0\partightenfactor0
+
+\f1 \cf0 \
+Part One: Going through 10 websites (8/24 \'96 10/13)\
+\
+\'93DNS over HTTPS disabled\'94\
+-Open Firefox (80.0.1) and disable DNS  over HTTPS. \
+-Open up Wireshark and filter through \'91DNS\'92 only\
+-Go through the 10 most popular (SFW) websites according to Alexa. In between going through each website, close Firefox, and reopen it. \
+-Export the filtered packets to a .csv file\
+\
+\'93DNS over HTTPS enabled\'94\
+-Repeat the steps above, but this time filter using \'91ip.addr==192.168.180.100\'92 (This is the IP address DNS over HTTPS uses to send/receive encrypted packets\
+\
+\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\
+\
+Part Two: Going through 100 websites (10/13 \'96 10/27)\
+\
+\'93DNS over HTTPS disabled\'94\
+-Write a shell script that goes through 100 of the most popular (SFW) websites on firefox. Have the shell wait ~40 seconds between each website it visits\
+-Run with \'91DNS over HTTPS enabled\'92 (DNS filter), then export the packets to a .csv file\
+-Run with \'91DNS over HTTPS disabled\'92 (192.168.180.100 filter), then export the packets to a .csv file\
+-Repeat 10 times\
+\
+\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\
+\
+Part Three: Splitting the .csv files (10/27 \'96 11/9)\
+\
+-Write some code (I used Java) that splits the .csv files into smaller .csv files. There should be two .csv files from part 2. The .csv file from part 2 with all the DoH-disabled packets should be split every ~40 seconds (or whatever time value you waited in your script)\
+-The .csv file from part 2 with all the DoH-enabled packets should be split every ~40 seconds (or whatever time value you waited in your script)\
+-Total number of smaller, DoH-disabled .csv files: 100\
+-Total number of smaller, DoH-enabled .csv files: 100\
+\
+\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\
+\
+Part Four: Weka (11/18 \'96 12/1)\
+\
+Write a program that creates a .csv file were On each line:\
+1) Total number of incoming packets from part 3\
+2) Total number of outgoing packets from part 3\
+3) Total size of incoming packets from part 3\
+4) Total size of outgoing packets from part 3\
+5) website\
+Make them comma-separated, with no spaces in between\
+\
+For DoH, you should have 1,000 lines (100 websites x 10)\
+For noDoH, you should also have 1,000 lines\
+\
+-Then take each of these two .csv files, convert them to .txt, and add the following to the top: \
+\
+	@relation website_fingerprinting\
+	@attribute incoming numeric\
+	@attribute outgoing numeric\
+	@attribute cumulOutgoing numeric\
+	@attribute cumulIncoming numeric\
+	@attribute websites \{{\field{\*\fldinst{HYPERLINK "http://google.com/"}}{\fldrslt \cf2 \ul \ulc2 google.com}}, etc....\}\
+\
+	@data\
+\
+-Then change the .csv files from .txt to .arff ( cp (name here).txt (name here).arff )\
+-Download and open Weka, and run the following:\
+\
+BayesNet, NaiveBayes, Logistic, MultiLayerPerceptron, IBK, J48, Random Forest, REPTree\cf1 \
+}
